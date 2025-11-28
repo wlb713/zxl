@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据导出 - 教材报名系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>数据导出</h1>
+        
+        <div class="auth-section">
+            <div class="form-group">
+                <label for="password">管理员密码</label>
+                <input type="password" id="password" placeholder="请输入管理员密码">
+            </div>
+            <button id="authBtn" onclick="authenticate()">验证身份</button>
+        </div>
+
+        <div id="exportSection" class="export-section" style="display: none;">
+            <div class="form-group">
+                <label>导出选项</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="exportExcel" name="exportFormat" value="excel" checked>
+                        <label for="exportExcel">Excel格式 (.xlsx)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="exportCSV" name="exportFormat" value="csv">
+                        <label for="exportCSV">CSV格式 (.csv)</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="exportJSON" name="exportFormat" value="json">
+                        <label for="exportJSON">JSON格式 (.json)</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="dateFilter">日期筛选</label>
+                <select id="dateFilter">
+                    <option value="all">全部数据</option>
+                    <option value="today">今天</option>
+                    <option value="week">最近一周</option>
+                    <option value="month">最近一个月</option>
+                    <option value="custom">自定义日期范围</option>
+                </select>
+            </div>
+
+            <div id="customDateRange" class="custom-date-range" style="display: none;">
+                <div class="form-group">
+                    <label for="startDate">开始日期</label>
+                    <input type="date" id="startDate">
+                </div>
+                <div class="form-group">
+                    <label for="endDate">结束日期</label>
+                    <input type="date" id="endDate">
+                </div>
+            </div>
+
+            <button id="exportBtn" onclick="exportData()">导出数据</button>
+            
+            <div id="dataSummary" class="data-summary" style="display: none;">
+                <h3>数据统计</h3>
+                <div id="summaryContent"></div>
+            </div>
+        </div>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script src="export.js"></script>
+</body>
+</html>
