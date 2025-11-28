@@ -135,3 +135,108 @@ button:disabled {
         padding: 10px;
     }
 }
+/* === 以下是新增的导出页面样式 === */
+
+/* 导出页面特定样式 */
+.auth-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #3498db;
+}
+
+.export-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #27ae60;
+}
+
+.custom-date-range {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 10px;
+    padding: 15px;
+    background: #e8f4fd;
+    border-radius: 4px;
+}
+
+.data-summary {
+    background: #e8f5e8;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+    border-left: 4px solid #2ecc71;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.summary-item {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.summary-item h4 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 5px;
+}
+
+.summary-item ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.summary-item li {
+    padding: 5px 0;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.summary-item li:last-child {
+    border-bottom: none;
+}
+
+.admin-link {
+    text-align: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.admin-link a {
+    color: #666;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 8px 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.admin-link a:hover {
+    background: #f8f9fa;
+    color: #3498db;
+    border-color: #3498db;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .custom-date-range {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+}
