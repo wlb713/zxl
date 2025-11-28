@@ -42,11 +42,113 @@ function authenticate() {
         document.getElementById('exportSection').style.display = 'block';
         showMessage('身份验证成功！', 'success');
         console.log('身份验证成功');
+        
+        // 验证成功后立即加载数据统计
+        loadDataSummary();
     } else {
         showMessage('密码错误，请重新输入！', 'error');
         document.getElementById('password').value = '';
         document.getElementById('password').focus();
     }
+}
+
+// 加载数据统计
+async function loadDataSummary() {
+    try {
+        console.log('开始加载数据统计...');
+        
+        // 查询所有数据用于统计
+        const { data, error } = await supabase
+            .from('registrations')
+            .select('*')
+            .order('created_at', { ascending: false });
+            
+        if (error) {
+            console.error('统计查询错误:', error);
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+            document.getElementById('dataSummary').style.display = 'none';
+            return;
+        }
+
+        // 生成统计信息
+        generateSummary(data);
+        document.getElementById('dataSummary').style.display = 'block';
+        
+    } catch (error) {
+        console.error('加载统计信息错误:', error);
+    }
+}
+
+// 生成统计信息
+function generateSummary(data) {
+    // 按年级统计
+    const gradeCount = {};
+    // 按学校统计
+    const schoolCount = {};
+    // 按教材统计
+    const textbookCount = {};
+    // 按省份统计
+    const provinceCount = {};
+
+    data.forEach(item => {
+        // 年级统计
+        gradeCount[item.grade] = (gradeCount[item.grade] || 0) + 1;
+        
+        // 学校统计
+        schoolCount[item.school] = (schoolCount[item.school] || 0) + 1;
+        
+        // 教材统计
+        if (item.textbooks) {
+            const textbooks = item.textbooks.split(', ');
+            textbooks.forEach(book => {
+                textbookCount[book] = (textbookCount[book] || 0) + 1;
+            });
+        }
+        
+        // 省份统计
+        provinceCount[item.province] = (provinceCount[item.province] || 0) + 1;
+    });
+
+    let summaryHtml = `
+        <div class="summary-grid">
+            <div class="summary-item">
+                <h4>总报名人数</h4>
+                <p style="font-size: 24px; font-weight: bold; color: #3498db; text-align: center;">${data.length}</p>
+            </div>
+            <div class="summary-item">
+                <h4>按年级统计</h4>
+                <ul>
+                    ${Object.entries(gradeCount).map(([grade, count]) => 
+                        `<li>${grade}: ${count}人</li>`
+                    ).join('')}
+                </ul>
+            </div>
+            <div class="summary-item">
+                <h4>按教材统计</h4>
+                <ul>
+                    ${Object.entries(textbookCount).map(([book, count]) => 
+                        `<li>${book}: ${count}人</li>`
+                    ).join('')}
+                </ul>
+            </div>
+            <div class="summary-item">
+                <h4>热门学校 (前5)</h4>
+                <ul>
+                    ${Object.entries(schoolCount)
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 5)
+                        .map(([school, count]) => 
+                            `<li>${school}: ${count}人</li>`
+                        ).join('')}
+                </ul>
+            </div>
+        </div>
+    `;
+
+    document.getElementById('summaryContent').innerHTML = summaryHtml;
 }
 
 // 导出数据
@@ -86,8 +188,14 @@ async function exportData() {
         // 添加日期筛选
         if (dateFilter !== 'all' && startDate && endDate) {
             console.log('应用日期筛选');
-            query = query.gte('created_at', startDate + 'T00:00:00Z')
-                        .lte('created_at', endDate + 'T23:59:59Z');
+            // 修正日期格式，确保包含时间部分
+            const startDateTime = startDate + 'T00:00:00.000Z';
+            const endDateTime = endDate + 'T23:59:59.999Z';
+            
+            console.log('查询时间范围:', startDateTime, '至', endDateTime);
+            
+            query = query.gte('created_at', startDateTime)
+                        .lte('created_at', endDateTime);
         } else {
             console.log('查询所有数据');
         }
@@ -97,9 +205,8 @@ async function exportData() {
         const { data, error } = await query;
             
         console.log('查询结果:', {
-            data: data,
-            error: error,
-            dataLength: data ? data.length : 0
+            dataLength: data ? data.length : 0,
+            error: error
         });
         
         if (error) {
@@ -126,6 +233,9 @@ async function exportData() {
 
         showMessage(`数据导出成功！共导出 ${data.length} 条记录。`, 'success');
         console.log('导出流程完成');
+
+        // 更新统计信息
+        generateSummary(data);
 
     } catch (error) {
         console.error('导出过程错误:', error);
